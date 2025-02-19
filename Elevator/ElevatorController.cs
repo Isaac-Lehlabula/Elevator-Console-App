@@ -28,7 +28,8 @@
 
             if (bestElevator != null)
             {
-                bestElevator.Stop();
+                Console.WriteLine($"Dispatching elevator from floor {bestElevator.CurrentFloor} to floor {requestedFloor}");
+                bestElevator.MoveTo(requestedFloor);
             }
         }
 
