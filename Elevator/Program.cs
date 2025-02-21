@@ -5,7 +5,7 @@ namespace ElevatorSimulation
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             // Initialize a list of elevators (for example: 2 elevators with a capacity of 5 each)
             List<Elevator> elevators = new List<Elevator>
@@ -34,7 +34,7 @@ namespace ElevatorSimulation
                     controller.AddRequest(floor);
 
                     // Process the next request in the queue
-                    controller.ProcessNextRequest();
+                    await controller.ProcessNextRequestAsync();
 
                     // Display the current status of each elevator
                     Console.WriteLine("Elevator statuses:");

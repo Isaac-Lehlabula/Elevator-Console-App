@@ -87,15 +87,15 @@ namespace ElevatorSimulation.Tests
         }
 
         [TestMethod]
-        public void MoveTo_ReachesTargetFloor()
+        public async Task MoveToAsync_ReachesTargetFloor()
         {
             // Arrange
             var elevator = new Elevator(5);
             int targetFloor = 3;
-
+            
             // Act
-            elevator.MoveTo(targetFloor);
-
+            await elevator.MoveToAsync(targetFloor);
+            
             // Assert
             Assert.AreEqual(targetFloor, elevator.CurrentFloor);
             Assert.AreEqual(ElevatorDirection.Idle, elevator.Direction);

@@ -54,8 +54,8 @@
             if (PassengerCount > 0)
                 PassengerCount--;
         }
-        // Method to simulate moving to a target floor
-        public void MoveTo(int targetFloor)
+        // Asynchronous method to simulate moving to a target floor without blocking the thread.
+        public async Task MoveToAsync(int targetFloor)
         {
             Console.WriteLine($"Elevator starting from floor {CurrentFloor} to reach floor {targetFloor}.");
             while (CurrentFloor != targetFloor)
@@ -69,11 +69,10 @@
                     MoveDown();
                 }
 
-                // Display the current status of the elevator
                 Console.WriteLine($"Elevator moving... Floor: {CurrentFloor}, Direction: {Direction}");
 
-                // Pause for 1 second to simulate the elevator traveling between floors
-                Thread.Sleep(1000);
+                // Asynchronously wait for 1 second to simulate travel time.
+                await Task.Delay(1000);
             }
             Stop();
             Console.WriteLine($"Elevator reached floor {CurrentFloor}.");

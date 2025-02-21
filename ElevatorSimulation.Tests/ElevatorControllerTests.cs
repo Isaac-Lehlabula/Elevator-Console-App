@@ -8,46 +8,44 @@ namespace ElevatorSimulation.Tests
     public class ElevatorControllerTests
     {
         [TestMethod]
-        public void ProcessNextRequest_DispatchesNearestElevator()
+        public async Task ProcessNextRequestAsync_DispatchesNearestElevator()
         {
             // Arrange
-            // Create two elevators starting at floor 0.
             var elevator1 = new Elevator(5);
             var elevator2 = new Elevator(5);
+            // Both elevators start at floor 0
             var controller = new ElevatorController(new List<Elevator> { elevator1, elevator2 });
             int targetFloor = 4;
 
             // Act
             controller.AddRequest(targetFloor);
-            controller.ProcessNextRequest();
+            await controller.ProcessNextRequestAsync();
 
-            // Assert
-            // With both starting at 0, either elevator could be chosen.
-            // Check that at least one elevator reached the target floor.
+            // Assert: Since both start at 0, either elevator could be dispatched.
             bool reached = (elevator1.CurrentFloor == targetFloor) || (elevator2.CurrentFloor == targetFloor);
             Assert.IsTrue(reached, "One of the elevators should have moved to the requested floor.");
         }
 
         [TestMethod]
-        public void FindNearestElevator_ReturnsClosestElevator()
+        public async Task FindNearestElevator_ReturnsClosestElevator()
         {
             // Arrange
-            // Elevator1 at floor 1, Elevator2 at floor 5.
             var elevator1 = new Elevator(5);
             var elevator2 = new Elevator(5);
-            elevator1.MoveTo(1);
-            elevator2.MoveTo(5);
+
+            // Manually move elevators to simulate different positions.
+            await elevator1.MoveToAsync(1);
+            await elevator2.MoveToAsync(5);
 
             var controller = new ElevatorController(new List<Elevator> { elevator1, elevator2 });
             int requestedFloor = 2;
 
             // Act
-            // Add a request and process it. The nearest (elevator1) should be dispatched.
             controller.AddRequest(requestedFloor);
-            controller.ProcessNextRequest();
+            await controller.ProcessNextRequestAsync();
 
-            // Assert
-            Assert.AreEqual(requestedFloor, elevator1.CurrentFloor, "Elevator1 should be dispatched as it is closer.");
+            // Assert: Elevator1 (closer to floor 2) should be dispatched.
+            Assert.AreEqual(requestedFloor, elevator1.CurrentFloor, "Elevator1 should be dispatched as it is closer to the requested floor.");
         }
     }
 }

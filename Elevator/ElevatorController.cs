@@ -4,6 +4,7 @@
     {
         private List<Elevator> elevators;
         private Queue<int> requestQueue; // Queue to store floor requests
+        private readonly object queueLock = new object(); // Lock object for thread-safety
 
         public ElevatorController(List<Elevator> elevators)
         {
@@ -17,19 +18,24 @@
             requestQueue.Enqueue(floor);
         }
 
-        // Method to process the next request from the queue
-        public void ProcessNextRequest()
+        // Asynchronous method to process the next request from the queue
+        public async Task ProcessNextRequestAsync()
         {
-            if (requestQueue.Count == 0)
-                return;
+            int requestedFloor;
+            lock (queueLock)
+            {
+                if (requestQueue.Count == 0)
+                    return;
 
-            int requestedFloor = requestQueue.Dequeue();
+                requestedFloor = requestQueue.Dequeue();
+            }
+
             Elevator bestElevator = FindNearestElevator(requestedFloor);
 
             if (bestElevator != null)
             {
                 Console.WriteLine($"Dispatching elevator from floor {bestElevator.CurrentFloor} to floor {requestedFloor}");
-                bestElevator.MoveTo(requestedFloor);
+                await bestElevator.MoveToAsync(requestedFloor);
             }
         }
 
