@@ -15,7 +15,10 @@
         // Method to add a floor request to the queue
         public void AddRequest(int floor)
         {
-            requestQueue.Enqueue(floor);
+            lock (queueLock)
+            {
+                requestQueue.Enqueue(floor);
+            }
         }
 
         // Asynchronous method to process the next request from the queue
@@ -31,11 +34,18 @@
             }
 
             Elevator bestElevator = FindNearestElevator(requestedFloor);
-
             if (bestElevator != null)
             {
-                Console.WriteLine($"Dispatching elevator from floor {bestElevator.CurrentFloor} to floor {requestedFloor}");
-                await bestElevator.MoveToAsync(requestedFloor);
+                bestElevator.AddStop(requestedFloor);
+                // If the elevator is idle, start processing its route.
+                if (bestElevator.Direction == ElevatorDirection.Idle)
+                {
+                    await bestElevator.ProcessRouteAsync();
+                }
+                else
+                {
+                    Console.WriteLine($"Added stop {requestedFloor} to elevator's route.");
+                }
             }
         }
 
